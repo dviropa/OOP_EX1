@@ -60,5 +60,11 @@ public abstract class Player {
         this.number_of_bombs = initial_number_of_bombs;
         this.number_of_unflippedable = initial_number_of_unflippedable;
     }
+    //    @Override
+    public Boolean equals(Player p) {
+        if(p.isPlayerOne==this.isPlayerOne)
+            return true;
+        return false;
+    }
 
 }

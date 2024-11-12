@@ -19,28 +19,45 @@ public class GameLogic implements PlayableLogic {
         GameBoard[3][3] = disc1;
         GameBoard[4][3] = disc2;
         GameBoard[3][4] = disc2;
+        gamehistory.add(GameBoard);
     }
-    private int[][] numOfKiils = new int[8][8];
+//    private int[][] numOfKiils = new int[8][8];
     private List<Disc[][]> gamehistory = new ArrayList<>();
     private List<Position>[][] killspos = new List[8][8];
     private Player PlayersTurn;
 
     @Override
     public boolean locate_disc(Position a, Disc disc) {
+//        GameBoard[a.row()][a.col()] = disc;
+//        return true;
+
+
         if (getDiscAtPosition(a) != null) return false;//בדיקה שהמיקום שהדיסק מעוניין להגיע איליו ריק
-        if (ValidMoves().contains(a)) {
+        if (Contains(ValidMoves(),a)) {
             GameBoard[a.row()][a.col()] = disc;// ממקם את השחקן בלוח
+           List<Position> l=killspos[a.row()][a.col()];
+            for (int i = 0; i <l.size() ; i++) {
+               GameBoard[l.get(i).row()][l.get(i).col()]=new SimpleDisc(disc.getOwner());
+            }
+            if (PlayersTurn == getFirstPlayer()) PlayersTurn = getSecondPlayer();
+            else PlayersTurn = getFirstPlayer();
+
             return true;
         }
         return false;
     }
-
+private Boolean Contains (List<Position> ValidMoves,Position a){
+        if (ValidMoves.size()==0)return false;
+    for (int i = 0; i < ValidMoves.size(); i++) {
+        if(ValidMoves.get(i).equals(a))return  true;
+    }
+    return false;
+}
     @Override
     public Disc getDiscAtPosition(Position position) {
         if (GameBoard[position.row()][position.col()] == null)
             return null; // בודק אם המיקום שקיבלנו על הלוח הוא null ואם כן מחזיר null
-        Disc d = new SimpleDisc(GameBoard[position.row()][position.col()].getOwner());
-        return d; // במידה והמיקום לא היה null הוא מחזיר למי שייך הדיסקית באותה נקודה
+        return GameBoard[position.row()][position.col()]; // במידה והמיקום לא היה null הוא מחזיר למי שייך הדיסקית באותה נקודה
     }
 
     @Override
@@ -50,6 +67,11 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public List<Position> ValidMoves() {
+        for (int i = 0; i <killspos.length ; i++) {
+            for (int j = 0; j < killspos.length; j++) {
+                killspos[j][i]=new ArrayList<>();
+            }
+        }
         List<Position> l = new ArrayList<Position>();
 
             for (Position p : listposi()) {
@@ -59,20 +81,21 @@ public class GameLogic implements PlayableLogic {
     }
     public List<Position> listposi(){
         List<Position> p = new ArrayList<Position>();
-        Player tempp= getFirstPlayer();
+        Player tempp= getSecondPlayer();
         if (isFirstPlayerTurn() == false) {
-            tempp= getSecondPlayer();
+            tempp= getFirstPlayer();
         }
         for (int i = 0; i <GameBoard.length ; i++) {
             for (int j = 0; j < GameBoard.length; j++) {
-                if (GameBoard[j][i]==tempp)p.add(new Position(j,i));
+                if(GameBoard[j][i]!=null)
+                if (GameBoard[j][i].getOwner().equals(tempp))p.add(new Position(j,i));
             }
         }
         return p;
     }
 
 
-    public List<Position> healp_validmovs(Position p) {
+    public List<Position> healp_validmovs(Position pos) {
         Player anemy;
         Player me;
         if (isFirstPlayerTurn() == true) {
@@ -83,37 +106,42 @@ public class GameLogic implements PlayableLogic {
             me = getSecondPlayer();
         }
         List<Position> l = new ArrayList<Position>();
-        Position temp = new Position(p.row() - 1, p.col() - 1);
+        Position temp = new Position(pos.row() - 1, pos.col() - 1);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                if (temp.row() + j < 9 && temp.row() + j < 0 && temp.col() + j < 9 && temp.col() + j < 0) {
+                if (temp.row() + j < 9 && temp.row() + j >0 && temp.col() + j < 9 && temp.col() + j >0) {
                     Position newp = new Position(temp.row() + j, temp.col() + i);
                     if (getDiscAtPosition(newp) != null) break;
 //                    if(GameBoard[newp.X][newp.Y].getOwner()==anemy)return false;
                     int caunt = 0;
                     List<Position> killsposlist = new ArrayList<Position>();
-                    int x = p.row() - newp.row();
-                    int y = p.col() - newp.col();
+                    int x = pos.row() - newp.row();
+                    int y = pos.col() - newp.col();
+                    Position p= new Position(pos.row(),pos.col());
                     for (int k = 0; k < 8; k++) {
-                        x += p.row();
-                        y += p.col();
-                        if (x < 9 && x < 0 && y < 9 && y < 0) {
-                            if (GameBoard[x][y].getOwner() == null) {
+                        if(k==0){
+                            p.set_position(pos.row()+x,pos.col()+y);
+                        }
+                        else p.set_position(p.row()+x,p.col()+y);
+
+//                        x += p.row();
+//                        y += p.col();
+                        if (p.row() < 8 && p.row() > 0 && p.col() < 8 && p.col() > 0) {
+                            if (GameBoard[p.row()][p.col()] == null) {
                                 caunt = 0;
                                 killsposlist = null;
                                 break;
                             }
-                            if (GameBoard[x][y].getOwner() == me) {
+                            if (GameBoard[p.row()][p.col()].getOwner() == me) {
                                 l.add(newp);
-                                numOfKiils[newp.row()][newp.col()] += caunt;
-                                killspos[newp.row()][newp.col()].addAll(killsposlist);
+//                                numOfKiils[newp.row()][newp.col()] += caunt;
+                                if( killspos[newp.row()][newp.col()].size()==0)killspos[newp.row()][newp.col()]=killsposlist;
+                               else killspos[newp.row()][newp.col()].addAll(killsposlist);
                                 break;
                             }
-                            if (GameBoard[x][y].getOwner() == anemy) {
+                            if (GameBoard[p.row()][p.col()].getOwner() == anemy) {
                                 caunt++;
-                                Position pos = null;
-                                pos.set_position(x, y);
-                                killsposlist.add(pos);
+                                killsposlist.add(new Position(p.row(),p.col()));
                             }
                         }
                     }
@@ -122,7 +150,7 @@ public class GameLogic implements PlayableLogic {
             }
         }
 
-        if (getDiscAtPosition(p) == null) return l;
+        if (getDiscAtPosition(pos) == null) return l;
         return l;
     }
 
@@ -130,7 +158,7 @@ public class GameLogic implements PlayableLogic {
     @Override
     public int countFlips(Position a) {
         ValidMoves();
-        return numOfKiils[a.row()][a.col()];
+        return killspos[a.row()][a.col()].size();
     }
 
     @Override
@@ -157,13 +185,13 @@ public class GameLogic implements PlayableLogic {
 
     @Override
     public boolean isGameFinished() {
-        List<Position> l = ValidMoves();
-        if (l.isEmpty()) {
-            if (isFirstPlayerTurn()) getFirstPlayer().addWin();
-            else getSecondPlayer().addWin();
-            reset();
-            return true;
-        }
+//        List<Position> l = ValidMoves();
+//        if (l.isEmpty()) {
+//            if (isFirstPlayerTurn()) getFirstPlayer().addWin();
+//            else getSecondPlayer().addWin();
+//            reset();
+//            return true;
+//        }
         return false;
     }
 

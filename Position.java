@@ -32,4 +32,9 @@ public class Position {
         return ("("+this.col()+","+" "+this.row()+")");
     }
 
+    public Boolean equals(Position p) {
+        if(p.row()==this.row()&&p.col()==this.col())
+            return true;
+        return false;
+    }
 }
