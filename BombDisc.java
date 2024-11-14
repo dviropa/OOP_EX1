@@ -19,10 +19,5 @@ public class BombDisc implements Disc {
     public String getType() {
         return "💣";
     }
-//    @Override
-public Boolean equals(BombDisc b) {
-    if(b.getOwner().equals(this.getOwner()))
-        return true;
-    return false;
-}
+
 }

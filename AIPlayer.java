@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Represents an AI player in the game. The logic for making a move will be based
@@ -9,8 +10,8 @@ public abstract class AIPlayer extends Player {
         registerAIPlayerType("RandomAI", RandomAI.class);
         registerAIPlayerType("GreedyAI", GreedyAI.class);
         // Add more AIPlayer subclasses here as needed
-    }
 
+    }
     @Override
     public boolean isHuman() {
         return false;
@@ -46,4 +47,48 @@ public abstract class AIPlayer extends Player {
         return new ArrayList<>(aiPlayerRegistry.keySet());
     }
     public abstract Move makeMove(PlayableLogic gameStatus);
+
+//    public  Move makeMove(PlayableLogic gameStatus) {
+//
+//
+//        if(gameStatus.isFirstPlayerTurn()==true){
+//
+//            if(randomdisc==0&&gameStatus.getFirstPlayer().getNumber_of_bombs()>0){
+//                Disc d=new BombDisc(gameStatus.getFirstPlayer());
+//                gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
+//            }
+//
+//            else if(randomdisc==1&&gameStatus.getFirstPlayer().getNumber_of_unflippedable()>0){
+//                Disc d=new UnflippableDisc(gameStatus.getFirstPlayer());
+//                gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
+//            }
+//
+//            else{
+//                Disc d=new SimpleDisc(gameStatus.getFirstPlayer());
+//                gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
+//            }
+//
+//        }
+//        else {
+//
+//            if(randomdisc==0&&gameStatus.getSecondPlayer().getNumber_of_bombs()>0){
+//
+//                Disc d=new BombDisc(gameStatus.getFirstPlayer());
+//                gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
+//            }
+//
+//            else  if(randomdisc==1&&gameStatus.getSecondPlayer().getNumber_of_unflippedable()>0){
+//                Disc d=new UnflippableDisc(gameStatus.getFirstPlayer());
+//                gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
+//            }
+//
+//            else {
+//                Disc d=new SimpleDisc(gameStatus.getSecondPlayer());
+//                gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
+//            }
+//
+//        }
+//
+//
+//    }
 }

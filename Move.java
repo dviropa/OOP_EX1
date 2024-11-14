@@ -1,4 +1,3 @@
-
 public class Move {
     private Position p;
     private Disc d;
@@ -7,6 +6,7 @@ public class Move {
         this.p = p;
         this.d = d;
     }
+
 
     public Position position() {
         return p;

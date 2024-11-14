@@ -415,5 +415,3 @@ public class GUI_for_chess_like_games extends JFrame {
         turnLabel.setText("Player 1's Turn");
     }
 }
-
-
