@@ -31,41 +31,25 @@ public GameBoardClass GameBoard1=new GameBoardClass( d);
     @Override
     public boolean locate_disc(Position a, Disc disc) {
         //בדיקה שהמיקום שהדיסק מעוניין להגיע אליו ריק
-        if(isFirstPlayerTurn()==true){
             if(disc.getType()=="⭕"){
-                if(getFirstPlayer().number_of_unflippedable>0){
-                    getFirstPlayer().reduce_unflippedable();
+                if(disc.getOwner().number_of_unflippedable>0){
+                    disc.getOwner().reduce_unflippedable();
                     GameBoard1.addfUnflippableDisc();
                 }
 
                 else return false;
             }
-            if(disc.getType()=="💣"){
-                if(getFirstPlayer().number_of_bombs>0){
+           else if(disc.getType()=="💣"){
+                if(disc.getOwner().number_of_bombs>0){
 
-                    getFirstPlayer().reduce_bomb();
+                    disc.getOwner().reduce_bomb();
                 GameBoard1.addfBombDisc();
 
                 }
                 else return false;
-            }
-        }
-        else {
-            if(disc.getType()=="⭕"){
-                if(getSecondPlayer().number_of_unflippedable>0) {
-                    getSecondPlayer().reduce_unflippedable();
-                    GameBoard1.addfUnflippableDisc();
-                }
-                else return false;
-            }
-            if(disc.getType()=="💣"){
-                if(getSecondPlayer().number_of_bombs>0) {
-                    getSecondPlayer().reduce_bomb();
-                    GameBoard1.addfBombDisc();
-                }
-                else return false;
-            }
-        }
+           }
+
+
         if (getDiscAtPosition(a) != null || !ValidMoves().contains(a)) {
             return false;
         }
@@ -79,13 +63,10 @@ public GameBoardClass GameBoard1=new GameBoardClass( d);
         }
         // כאן אני מחליף בין התורות של השחקנים כלומר אם שחקן 1 שיחק אז עכשיו שחקן 2 ישחק
         PlayerTurn = !PlayerTurn;
-        String player;
-        if (isFirstPlayerTurn()) {
-            player = "1";
-        } else {
-            player = "2";
-        }
+
+        String player = isFirstPlayerTurn() ? "1" : "2";
         System.out.println("The player " + player + " placed a " + disc.getType() + " in (" + a.row() + "," + a.col() + ")");
+
         gameHistory.push(new GameBoardClass(GameBoard1.copy_board(GameBoard1.GameBoard),GameBoard1.get_num_of_BombDisc(),GameBoard1.get_num_of_UnflippableDisc()));
         GameBoard1= new GameBoardClass(GameBoard1.copy_board(GameBoard1.GameBoard));
 
@@ -175,16 +156,10 @@ public GameBoardClass GameBoard1=new GameBoardClass( d);
                 possible_flip.add(GameBoard1.GameBoard[currentRow][currentCol]);
             }
             if (flip == true&&GameBoard1.GameBoard[currentRow][currentCol].getType()=="💣"&&GameBoard1.GameBoard[currentRow][currentCol].getOwner()==anemy) {
-                for (int i = 0; i < PossibleMoves.length; i++) {
-                    int[] move = PossibleMoves[i];
-                    while (isInGameBoard(move[0] + currentRow, move[1] + currentCol)) {
-                        if (GameBoard1.GameBoard[move[0] + currentRow] [move[1] + currentCol]!=null &&GameBoard1.GameBoard[move[0] + currentRow] [move[1] + currentCol].getOwner()==anemy)
-                            possible_flip.add(GameBoard1.GameBoard[move[0] + currentRow] [move[1] + currentCol]);
-                    }
-
-                }
+                possible_flip=bomfil( flip,currentRow,currentCol,anemy,possible_flip);
 
             }
+
             // התקדמות לתא הבא בהתאם למהלך שעשינו
             currentRow += rowDir;
             currentCol += colDir;
@@ -203,7 +178,23 @@ public GameBoardClass GameBoard1=new GameBoardClass( d);
         // מחזיר בסוף את מספר ההפיכות בהתאם למהלך שתרצה לבצע
         return numOfFlips;
     }
+    private ArrayList<Disc>  bomfil(Boolean flip,int currentRow,int currentCol,Player anemy ,ArrayList<Disc>possible_flip){
+        if (flip == true&&GameBoard1.GameBoard[currentRow][currentCol].getType()=="💣"&&GameBoard1.GameBoard[currentRow][currentCol].getOwner()==anemy) {
+            for (int i = 0; i < PossibleMoves.length; i++) {
+                int[] move = PossibleMoves[i];
+                while (isInGameBoard(move[0] + currentRow, move[1] + currentCol)) {
+                    if (GameBoard1.GameBoard[move[0] + currentRow] [move[1] + currentCol]!=null &&GameBoard1.GameBoard[move[0] + currentRow] [move[1] + currentCol].getOwner()==anemy)
+                        possible_flip.add(GameBoard1.GameBoard[move[0] + currentRow] [move[1] + currentCol]);
+                    if(GameBoard1.GameBoard[move[0] +currentRow][move[1] +currentCol]!=null&&GameBoard1.GameBoard[move[0] +currentRow][move[1] +currentCol].getType()=="💣"){
+                        possible_flip=bomfil( flip,move[0] +currentRow,move[1] +currentCol,anemy,possible_flip);
+                    }
+                }
 
+            }
+
+        }
+        return possible_flip;
+    }
     // בדיקה שהmove קורה בתוך גבולות הלוח שלנו
     private boolean isInGameBoard(int row, int col) {
         if ((row >= 0 && row < GameBoard1.GameBoard.length && col >= 0 && col < GameBoard1.GameBoard[0].length) == true)
