@@ -8,51 +8,23 @@ public class RandomAI extends AIPlayer {
 
     @Override
     public Move makeMove(PlayableLogic gameStatus) {
-
-
+        Player p = new RandomAI(gameStatus.isFirstPlayerTurn());
+        if (gameStatus.isFirstPlayerTurn() == true)p= gameStatus.getFirstPlayer();
+        if (gameStatus.isFirstPlayerTurn() == false)p= gameStatus.getSecondPlayer();
         Random random = new Random();
         int randomNumber = ThreadLocalRandom.current().nextInt(0, gameStatus.ValidMoves().size());
-        int randomdisc = ThreadLocalRandom.current().nextInt(0, 2);
+        int randomdisc = ThreadLocalRandom.current().nextInt(0, 3);
+        Disc d= new BombDisc(p);
 
-        if(gameStatus.isFirstPlayerTurn()==true){
-
-             if(randomdisc==0&&gameStatus.getFirstPlayer().getNumber_of_bombs()>0){
-                 Disc d=new BombDisc(gameStatus.getFirstPlayer());
-                 gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
-             }
-
-            else if(randomdisc==1&&gameStatus.getFirstPlayer().getNumber_of_unflippedable()>0){
-                Disc d=new UnflippableDisc(gameStatus.getFirstPlayer());
-                 gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
-             }
-
-            else{
-                Disc d=new SimpleDisc(gameStatus.getFirstPlayer());
-                 gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
-            }
-
+        if (randomdisc == 0 && p.getNumber_of_bombs() > 0) {
+            d = new BombDisc(p);
         }
-        else {
-
-              if(randomdisc==0&&gameStatus.getSecondPlayer().getNumber_of_bombs()>0){
-
-                  Disc d=new BombDisc(gameStatus.getFirstPlayer());
-                  gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
-              }
-
-            else  if(randomdisc==1&&gameStatus.getSecondPlayer().getNumber_of_unflippedable()>0){
-                Disc d=new UnflippableDisc(gameStatus.getFirstPlayer());
-                  gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
-              }
-
-            else {
-                Disc d=new SimpleDisc(gameStatus.getSecondPlayer());
-                  gameStatus.locate_disc(gameStatus.ValidMoves().get(randomNumber),d);
-              }
-
+        else if (randomdisc == 1 && p.getNumber_of_unflippedable() > 0) {
+                    d = new UnflippableDisc(p);
         }
+        else d = new SimpleDisc(p);
 
-
-        return null;
+        return new Move(gameStatus.ValidMoves().get(randomNumber), d);
     }
+
 }

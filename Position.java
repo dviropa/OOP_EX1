@@ -25,4 +25,5 @@ public class Position {
         Position position = (Position) o;
         return x == position.x && y == position.y;
     }
+
 }
