@@ -241,14 +241,6 @@ public class GameLogic implements PlayableLogic {
         return possible_flip;
     }
 
-    private Boolean Contains(HashSet<Disc> l, Disc d) {
-        for (Disc disc : l) {
-            if (disc.equals(d) || disc == d) return true;
-        }
-        return false;
-
-    }
-
     private HashSet<Disc> funk(int currentRow, int currentCol, Player anemy) {
         if (GameBoard[currentRow][currentCol].getType().equals("💣")) {
             // הפיכת שמונת הכיוונים שסביב הפצצה

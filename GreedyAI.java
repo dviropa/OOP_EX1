@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class GreedyAI extends AIPlayer {
     public GreedyAI(boolean isPlayerOne) {
@@ -12,23 +14,20 @@ public class GreedyAI extends AIPlayer {
         if (gameStatus.isFirstPlayerTurn() == false)p= gameStatus.getSecondPlayer();
         Position maxpos=new Position(0,0);
         int max=0;
-      for (Position pos:gameStatus.ValidMoves()){
-          if(max<gameStatus.countFlips(pos)) {
-              maxpos=pos;
-              max=gameStatus.countFlips(pos);
-          }
-          if(max==gameStatus.countFlips(pos))
-             if(pos.col()>maxpos.col()){
-                 maxpos=pos;
-                 max=gameStatus.countFlips(pos);
-             }
+        List<Position> l = new ArrayList();
+        max=0;
+        for (Position pos:gameStatus.ValidMoves()){
+            if(max<gameStatus.countFlips(pos)) {
+                l.clear();
+                maxpos=pos;
+                max=gameStatus.countFlips(pos);
+                l.add(pos);
+            }
+            else if(max==gameStatus.countFlips(pos)) l.add(pos);
+        }
+        l.sort(Comparator.comparingInt(Position::col).thenComparingInt(Position::row));
 
-             if(pos.col()==maxpos.col() && pos.row()>maxpos.row()){
-                 maxpos=pos;
-                 max=gameStatus.countFlips(pos);
-             }
-      }
-        gameStatus.ValidMoves().sort(Comparator.comparingInt(Position::row).thenComparingInt(Position::col));
-        return new Move(maxpos, new SimpleDisc(p));
+        return new Move(l.get(l.size()-1), new SimpleDisc(p));//  return new Move(maxpos, new SimpleDisc(p));
+
     }
 }
