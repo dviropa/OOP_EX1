@@ -358,22 +358,22 @@ public class GameLogic implements PlayableLogic {
             // משתנים לשמירת המידע על השחקנים והמנצח
             String player;
             String otherplayer;
-            int cp = p1, op = p2;
+            int CurrentplayerD = p1, OtherplayerD = p2;
 
             // זיהוי השחקן הנוכחי והשחקן היריב
             if (isFirstPlayerTurn()) {
                 player = "1";
                 otherplayer = "2";
             } else {
-                op = p1;
-                cp = p2;
+                OtherplayerD = p1;
+                CurrentplayerD = p2;
                 player = "2";
 
                 otherplayer = "1";
             }
 
             // הודעת הדפסה על תוצאת המשחק
-            System.out.println("Player " + player + " wins with " + cp + " discs! Player " + otherplayer + "  had " + op + " discs. ");
+            System.out.println("Player " + player + " wins with " + CurrentplayerD + " discs! Player " + otherplayer + "  had " + OtherplayerD + " discs. ");
         }
         // מחזיר true אם אין מהלכים חוקיים יותר
         return ValidMoves().isEmpty();
